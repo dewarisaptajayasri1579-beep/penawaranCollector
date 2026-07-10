@@ -101,10 +101,9 @@ export default function Sidebar({ isOpen, onClose, activeMenu, onSelectMenu }: S
         />
       )}
 
-      {/* Sidebar container */}
       <aside
         id="sidebar-container"
-        className={`fixed inset-y-0 left-0 w-64 bg-white/70 backdrop-blur-md border-r border-slate-100/50 flex flex-col z-50 transition-transform duration-300 lg:static lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 w-64 bg-white/70 backdrop-blur-md border-r border-slate-100/50 flex flex-col z-50 transition-transform duration-300 lg:static lg:translate-x-0 antialiased ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
@@ -134,7 +133,7 @@ export default function Sidebar({ isOpen, onClose, activeMenu, onSelectMenu }: S
           {menuGroups.map((group, groupIdx) => (
             <div key={groupIdx} className="space-y-1">
               {group.title && (
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 px-3 mt-4">
+                <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-1.5 px-3 mt-5">
                   {group.title}
                 </p>
               )}
@@ -145,10 +144,10 @@ export default function Sidebar({ isOpen, onClose, activeMenu, onSelectMenu }: S
                   <button
                     key={item.name}
                     onClick={() => handleMenuClick(item.name)}
-                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-semibold transition-all duration-200 ${
                       isActive 
                         ? 'bg-blue-50 text-blue-700 shadow-xs' 
-                        : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'
+                        : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'
                     }`}
                   >
                     <IconComponent className={`w-4 h-4 ${isActive ? 'text-blue-600' : 'text-slate-400'}`} />
@@ -165,9 +164,9 @@ export default function Sidebar({ isOpen, onClose, activeMenu, onSelectMenu }: S
                 <div className="mt-1">
                   <div 
                     onClick={() => setIsLaporanOpen(!isLaporanOpen)}
-                    className={`flex items-center justify-between px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 ${activeMenu.startsWith('laporan-') ? 'bg-blue-50 text-blue-700 shadow-xs' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'}`}
+                    className={`flex items-center justify-between px-3 py-2 rounded-xl cursor-pointer transition-all duration-200 ${activeMenu.startsWith('laporan-') ? 'bg-blue-50 text-blue-700 shadow-xs' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'}`}
                   >
-                    <div className="flex items-center gap-3 text-sm font-medium">
+                    <div className="flex items-center gap-2.5 text-[13px] font-semibold">
                       <PieChart className={`w-4 h-4 ${activeMenu.startsWith('laporan-') ? 'text-blue-600' : 'text-slate-400'}`} />
                       <span>Laporan</span>
                     </div>
@@ -189,7 +188,7 @@ export default function Sidebar({ isOpen, onClose, activeMenu, onSelectMenu }: S
                             <div 
                               key={item.id}
                               onClick={() => handleMenuClick(id)}
-                              className={`pl-4 py-2 cursor-pointer text-[13px] transition-colors relative before:content-[''] before:absolute before:left-[-1px] before:top-1/2 before:-translate-y-1/2 before:w-[2px] before:h-4 before:rounded-r-md ${isSubActive ? 'text-blue-700 font-bold before:bg-blue-600 bg-blue-50/50 rounded-r-lg' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50 rounded-r-lg'}`}
+                              className={`pl-4 py-2 cursor-pointer text-[12px] font-semibold transition-colors relative before:content-[''] before:absolute before:left-[-1px] before:top-1/2 before:-translate-y-1/2 before:w-[2px] before:h-4 before:rounded-r-md ${isSubActive ? 'text-blue-700 before:bg-blue-600 bg-blue-50/50 rounded-r-lg' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50 rounded-r-lg'}`}
                             >
                               {item.label}
                             </div>
