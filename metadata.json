@@ -1,0 +1,6 @@
+{
+  "name": "Collector Recall",
+  "description": "Interactive sales deck and presentation website for Collector Recall application, assisting businesses in managing collection follow-ups and field monitoring.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
