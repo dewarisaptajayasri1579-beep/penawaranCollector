@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import SummaryCard from './SummaryCard';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   ArrowLeft, LayoutDashboard, FileText, Settings, Users, Bell, 
@@ -235,7 +236,7 @@ export default function AdminApp() {
 
 
 // --- DASHBOARD VIEW COMPONENT ---
-function DashboardView() {
+export function DashboardView() {
   return (
     <motion.div 
       initial={{ opacity: 0, y: 10 }}
@@ -506,7 +507,7 @@ function DashboardView() {
 
 
 // --- IMPORT FAKTUR WIZARD COMPONENT ---
-function ImportFakturView({ onNavigate }: { onNavigate: (menu: string) => void }) {
+export function ImportFakturView({ onNavigate }: { onNavigate: (menu: string) => void }) {
   const [step, setStep] = useState(1);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -727,7 +728,7 @@ function ImportFakturView({ onNavigate }: { onNavigate: (menu: string) => void }
               className="px-6 py-2.5 rounded-xl font-bold text-blue-600 bg-blue-50 border border-blue-100 hover:bg-blue-100 transition-colors"
             >Import Lagi</button>
             <button 
-              onClick={() => onNavigate('dashboard')}
+              onClick={() => onNavigate('Dashboard')}
               className="px-6 py-2.5 rounded-xl font-bold text-white bg-slate-900 hover:bg-slate-800 shadow-md transition-all"
             >Lihat Tugas Berjalan</button>
           </div>
@@ -752,7 +753,7 @@ const MASTER_INVOICES = [
   { id: 'INV-202607-030', date: '10 Jul 2026', customer: 'Bidan Sumiati', area: 'Jakarta Utara', amount: 15500000, remaining: 15500000, dueDate: '25 Jul 2026', status: 'Belum Ditagih', collector: null, result: '-' },
 ];
 
-function DataFakturView() {
+export function DataFakturView() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('Semua');
   const [resultFilter, setResultFilter] = useState('Semua');
@@ -795,29 +796,73 @@ function DataFakturView() {
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
-        {/* Filter Bar */}
-        <div className="p-4 border-b border-slate-200 bg-slate-50/50 flex flex-wrap gap-3 items-center justify-between">
-          <div className="flex gap-3 flex-wrap">
-            <div className="relative">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-              <input 
-                type="text" 
-                placeholder="Cari No. Faktur / Pelanggan..." 
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-9 pr-4 py-2 text-sm border border-slate-200 rounded-lg w-64 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white" 
-              />
-            </div>
-            
-            <div className="relative flex items-center bg-white border border-slate-200 rounded-lg pr-2 hover:bg-slate-50 transition-colors">
-              <div className="pl-3 py-2 text-slate-400 pointer-events-none">
-                <Filter className="w-4 h-4" />
-              </div>
-              <select 
+      {/* Summary Cards Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-2">
+        <SummaryCard
+          title="Total Faktur Aktif"
+          value="342"
+          description="<span class='text-green-600 font-semibold'>+24</span> faktur baru minggu ini"
+          icon={FileText}
+          iconColorClass="text-blue-600"
+          iconBgClass="bg-blue-50"
+        />
+        <SummaryCard
+          title="Total Nilai Tagihan"
+          value="Rp 4.250.000.000"
+          description="<span class='text-slate-600'>85% dari target bulan ini</span>"
+          icon={TrendingUp}
+          iconColorClass="text-emerald-600"
+          iconBgClass="bg-emerald-50"
+        />
+        <SummaryCard
+          title="Menunggu Verifikasi"
+          value="18"
+          description="<span class='text-amber-600 font-semibold'>Perlu segera di-review</span>"
+          icon={Clock}
+          iconColorClass="text-amber-600"
+          iconBgClass="bg-amber-50"
+        />
+        <SummaryCard
+          title="Overdue (Jatuh Tempo)"
+          value="45"
+          description="<span class='text-red-600 font-semibold'>Tinggi!</span> Prioritas penagihan hari ini"
+          icon={AlertCircle}
+          iconColorClass="text-red-600"
+          iconBgClass="bg-red-50"
+        />
+      </div>
+
+      {/* Filter Bar */}
+      <div className="bg-white p-4 rounded-2xl border border-slate-100 shadow-xs space-y-4 mb-4">
+        <div className="flex flex-col xl:flex-row xl:items-center gap-3">
+          {/* Search input with inner icon */}
+          <div className="relative flex-1">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-slate-400" />
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Cari No. Faktur / Pelanggan..."
+              className="w-full pl-11 pr-10 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-800 placeholder:text-slate-400"
+            />
+            {searchTerm && (
+              <button
+                onClick={() => setSearchTerm('')}
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-md"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
+          
+          {/* Select dropdowns and Buttons */}
+          <div className="flex flex-col sm:flex-row gap-3">
+            <div className="relative group">
+              <Filter className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
+              <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="pl-2 pr-4 py-2 text-sm text-slate-600 bg-transparent focus:outline-none cursor-pointer appearance-none"
+                className="pl-10 pr-8 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 appearance-none transition-all cursor-pointer text-slate-700 font-medium"
               >
                 <option value="Semua">Semua Status</option>
                 <option value="Lunas">Lunas</option>
@@ -828,16 +873,14 @@ function DataFakturView() {
               </select>
             </div>
 
-            <div className="relative flex items-center bg-white border border-slate-200 rounded-lg pr-2 hover:bg-slate-50 transition-colors">
-              <div className="pl-3 py-2 text-slate-400 pointer-events-none">
-                <Activity className="w-4 h-4" />
-              </div>
-              <select 
+            <div className="relative group">
+              <Activity className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
+              <select
                 value={resultFilter}
                 onChange={(e) => setResultFilter(e.target.value)}
-                className="pl-2 pr-4 py-2 text-sm text-slate-600 bg-transparent focus:outline-none cursor-pointer appearance-none max-w-[150px] truncate"
+                className="pl-10 pr-8 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 appearance-none transition-all cursor-pointer text-slate-700 font-medium"
               >
-                <option value="Semua">Hasil Kunjungan</option>
+                <option value="Semua">Semua Hasil</option>
                 <option value="Tertagih Sesuai Nominal">Sesuai Nominal</option>
                 <option value="Tertagih Sebagian">Sebagian</option>
                 <option value="Menunggu Konfirmasi">Menunggu Konfirmasi</option>
@@ -846,32 +889,38 @@ function DataFakturView() {
                 <option value="-">Belum Ada</option>
               </select>
             </div>
-            
-            <button className="flex items-center gap-2 bg-white border border-slate-200 px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-slate-50">
+
+            <button className="flex items-center justify-center gap-2 px-4 py-2.5 border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-sm font-medium rounded-xl transition-all">
               <Calendar className="w-4 h-4" /> Jatuh Tempo
             </button>
-            <button className="flex items-center gap-2 bg-white border border-slate-200 px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-slate-50">
+            <button className="flex items-center justify-center gap-2 px-4 py-2.5 border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-sm font-medium rounded-xl transition-all">
               <Contact className="w-4 h-4" /> Collector
             </button>
           </div>
-          <span className="text-xs text-slate-500 font-medium">Menampilkan {filteredInvoices.length} dari {MASTER_INVOICES.length} Data</span>
         </div>
 
+        <div className="flex items-center justify-between text-xs text-slate-500 pt-2 border-t border-slate-100">
+          <span>Menampilkan <strong className="text-slate-700">{filteredInvoices.length}</strong> dari {MASTER_INVOICES.length} data</span>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+
         {/* Data Table */}
-        <div className="overflow-x-auto min-h-[400px]">
+        <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-500 uppercase tracking-wider">
-                <th className="p-4">No. Faktur</th>
-                <th className="p-4">Pelanggan</th>
-                <th className="p-4">Nominal / Sisa</th>
-                <th className="p-4">Jatuh Tempo</th>
-                <th className="p-4">Status</th>
-                <th className="p-4">Collector</th>
-                <th className="p-4 text-right">Aksi</th>
+              <tr className="bg-slate-50 text-slate-500 text-[11px] font-bold tracking-wider uppercase border-b border-slate-100">
+                <th className="py-3.5 px-6 whitespace-nowrap">No. Faktur</th>
+                <th className="py-3.5 px-4 whitespace-nowrap">Pelanggan</th>
+                <th className="py-3.5 px-4 whitespace-nowrap">Nominal / Sisa</th>
+                <th className="py-3.5 px-4 whitespace-nowrap">Jatuh Tempo</th>
+                <th className="py-3.5 px-4 whitespace-nowrap">Status</th>
+                <th className="py-3.5 px-4 whitespace-nowrap">Collector</th>
+                <th className="py-3.5 px-6 whitespace-nowrap text-right">Aksi</th>
               </tr>
             </thead>
-            <tbody className="text-sm divide-y divide-slate-100">
+            <tbody className="divide-y divide-slate-50">
               {filteredInvoices.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="p-8 text-center text-slate-400">
@@ -881,18 +930,18 @@ function DataFakturView() {
               ) : (
                 filteredInvoices.map((inv, idx) => (
                   <tr key={idx} className="hover:bg-slate-50 transition-colors group">
-                    <td className="p-4">
-                      <div className="font-bold text-slate-800">{inv.id}</div>
-                      <div className="text-[10px] text-slate-500">{inv.date}</div>
+                    <td className="py-3.5 px-6 whitespace-nowrap">
+                      <div className="font-semibold text-slate-900 font-mono text-xs">{inv.id}</div>
+                      <div className="text-[10px] text-slate-400 mt-0.5">{inv.date}</div>
                     </td>
-                    <td className="p-4">
-                      <div className="font-bold text-slate-700">{inv.customer}</div>
-                      <div className="text-[10px] text-slate-500 flex items-center gap-1 mt-0.5">
-                        <MapPin className="w-3 h-3" /> {inv.area}
+                    <td className="py-3.5 px-4 whitespace-nowrap">
+                      <div className="font-bold text-slate-900 text-xs">{inv.customer}</div>
+                      <div className="text-xs text-slate-500 font-medium flex items-center gap-1 mt-1">
+                        <MapPin className="w-3 h-3 text-slate-400" /> {inv.area}
                       </div>
                     </td>
-                    <td className="p-4">
-                      <div className="font-bold text-slate-900">Rp {inv.amount.toLocaleString('id-ID')}</div>
+                    <td className="py-3.5 px-4 whitespace-nowrap">
+                      <div className="font-bold text-slate-900 text-xs">Rp {inv.amount.toLocaleString('id-ID')}</div>
                       {inv.remaining > 0 && inv.remaining !== inv.amount && (
                         <div className="text-[10px] text-orange-600 font-semibold mt-0.5">
                           Sisa: Rp {inv.remaining.toLocaleString('id-ID')}
@@ -902,12 +951,12 @@ function DataFakturView() {
                         <div className="text-[10px] text-emerald-600 font-semibold mt-0.5">Lunas</div>
                       )}
                     </td>
-                    <td className="p-4">
-                      <div className={`font-semibold ${inv.status === 'Overdue' ? 'text-red-600' : 'text-slate-700'}`}>
+                    <td className="py-3.5 px-4 whitespace-nowrap text-xs">
+                      <div className={`font-semibold ${inv.status === 'Overdue' ? 'text-red-600' : 'text-slate-600'}`}>
                         {inv.dueDate}
                       </div>
                     </td>
-                    <td className="p-4">
+                    <td className="py-3.5 px-4 whitespace-nowrap">
                       {getStatusBadge(inv.status)}
                       {inv.result !== '-' && (
                         <div className="text-[10px] text-slate-500 mt-1 font-medium italic">
@@ -915,20 +964,20 @@ function DataFakturView() {
                         </div>
                       )}
                     </td>
-                    <td className="p-4">
+                    <td className="py-3.5 px-4 whitespace-nowrap">
                       {inv.collector ? (
                         <div className="flex items-center gap-2">
                           <div className="w-6 h-6 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-[10px] font-bold">
                             {inv.collector.substring(0,2).toUpperCase()}
                           </div>
-                          <span className="font-medium text-slate-700 text-xs">{inv.collector}</span>
+                          <span className="font-semibold text-slate-700 text-xs">{inv.collector}</span>
                         </div>
                       ) : (
-                        <span className="text-xs text-slate-400 italic">Belum di-assign</span>
+                        <span className="text-xs text-slate-400 italic font-medium">Belum di-assign</span>
                       )}
                     </td>
-                    <td className="p-4 text-right">
-                      <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <td className="py-3.5 px-6 whitespace-nowrap text-right">
+                      <div className="flex items-center justify-end gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
                         <button className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors" title="Detail">
                           <Eye className="w-4 h-4" />
                         </button>
@@ -969,7 +1018,7 @@ function DataFakturView() {
 }
 
 // --- LAPORAN VIEW COMPONENT ---
-function LaporanView({ activeReport }: { activeReport: string }) {
+export function LaporanView({ activeReport }: { activeReport: string }) {
   const selectedReport = activeReport.replace('laporan-', '');
 
   const reports = [
@@ -1130,9 +1179,10 @@ function LaporanView({ activeReport }: { activeReport: string }) {
 }
 
 // --- SERAH TERIMA FAKTUR VIEW ---
-function SerahTerimaFakturView() {
+export function SerahTerimaFakturView() {
   const [selectedInvoices, setSelectedInvoices] = useState<string[]>([]);
   const [selectedCollector, setSelectedCollector] = useState<string>('');
+  const [activeTab, setActiveTab] = useState<'belum' | 'sudah'>('belum');
   
   const dummyInvoices = [
     { id: 'INV-2607-004', date: '10 Jul 2026', customer: 'Bidan Ningsih', amount: 'Rp 2.100.000', area: 'Jakarta Pusat', assignedTo: null },
@@ -1141,13 +1191,18 @@ function SerahTerimaFakturView() {
     { id: 'INV-2607-006', date: '08 Jul 2026', customer: 'Bidan Sri', amount: 'Rp 1.250.000', area: 'Jakarta Selatan', assignedTo: 'Budi Santoso' },
   ];
 
+  const filteredInvoices = dummyInvoices.filter(i => activeTab === 'belum' ? !i.assignedTo : !!i.assignedTo);
+  const countBelum = dummyInvoices.filter(i => !i.assignedTo).length;
+  const countSudah = dummyInvoices.filter(i => !!i.assignedTo).length;
+
   const collectors = ['Andi Saputra', 'Budi Santoso', 'Rina Wijaya', 'Dodi Pratama'];
 
   const handleSelectAll = () => {
-    if (selectedInvoices.length === dummyInvoices.filter(i => !i.assignedTo).length) {
+    if (activeTab !== 'belum') return;
+    if (selectedInvoices.length === filteredInvoices.length) {
       setSelectedInvoices([]);
     } else {
-      setSelectedInvoices(dummyInvoices.filter(i => !i.assignedTo).map(i => i.id));
+      setSelectedInvoices(filteredInvoices.map(i => i.id));
     }
   };
 
@@ -1190,40 +1245,55 @@ function SerahTerimaFakturView() {
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
-        <div className="p-4 border-b border-slate-200 bg-slate-50/50 flex items-center justify-between">
-          <div className="flex gap-3">
-            <button className="text-sm font-bold text-blue-700 bg-blue-50 px-3 py-1.5 rounded-lg border border-blue-100">Belum Ditugaskan (3)</button>
-            <button className="text-sm font-medium text-slate-500 hover:text-slate-800 hover:bg-slate-50 px-3 py-1.5 rounded-lg">Sudah Ditugaskan (1)</button>
+      {/* Filter Bar */}
+      <div className="bg-white p-4 rounded-2xl border border-slate-100 shadow-xs space-y-4 mb-4">
+        <div className="flex flex-col xl:flex-row xl:items-center gap-3 justify-between">
+          <div className="flex gap-2 p-1 bg-slate-100/80 rounded-xl w-fit">
+            <button 
+              onClick={() => setActiveTab('belum')}
+              className={`text-sm px-4 py-2 rounded-lg transition-all ${activeTab === 'belum' ? 'font-bold text-blue-700 bg-white shadow-sm' : 'font-medium text-slate-500 hover:text-slate-700 hover:bg-white/50'}`}
+            >
+              Belum Ditugaskan ({countBelum})
+            </button>
+            <button 
+              onClick={() => setActiveTab('sudah')}
+              className={`text-sm px-4 py-2 rounded-lg transition-all ${activeTab === 'sudah' ? 'font-bold text-blue-700 bg-white shadow-sm' : 'font-medium text-slate-500 hover:text-slate-700 hover:bg-white/50'}`}
+            >
+              Sudah Ditugaskan ({countSudah})
+            </button>
           </div>
-          <div className="relative">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-            <input 
-              type="text" 
-              placeholder="Cari pelanggan/faktur..." 
-              className="pl-9 pr-4 py-2 text-sm border border-slate-200 rounded-lg w-64 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white" 
+          
+          <div className="relative flex-1 max-w-md">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-slate-400" />
+            <input
+              type="text"
+              placeholder="Cari pelanggan/faktur..."
+              className="w-full pl-11 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-800 placeholder:text-slate-400"
             />
           </div>
         </div>
-        <div className="overflow-x-auto min-h-[400px]">
+      </div>
+
+      <div className="bg-white rounded-2xl border border-slate-100 shadow-xs overflow-hidden flex flex-col">
+        <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-500 uppercase tracking-wider">
-                <th className="p-4 w-12 text-center">
+              <tr className="bg-slate-50 border-b border-slate-100 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                <th className="py-3.5 px-6 whitespace-nowrap w-12 text-center">
                   <div className="cursor-pointer" onClick={handleSelectAll}>
-                    {selectedInvoices.length > 0 && selectedInvoices.length === dummyInvoices.filter(i=>!i.assignedTo).length ? <CheckSquare className="w-5 h-5 text-blue-600 inline" /> : <Square className="w-5 h-5 text-slate-300 inline" />}
+                    {activeTab === 'belum' && selectedInvoices.length > 0 && selectedInvoices.length === filteredInvoices.length ? <CheckSquare className="w-5 h-5 text-blue-600 inline" /> : <Square className="w-5 h-5 text-slate-300 inline" />}
                   </div>
                 </th>
-                <th className="p-4">Faktur & Tanggal</th>
-                <th className="p-4">Pelanggan & Area</th>
-                <th className="p-4">Nominal</th>
-                <th className="p-4">Status Tugas</th>
+                <th className="py-3.5 px-4 whitespace-nowrap">Faktur & Tanggal</th>
+                <th className="py-3.5 px-4 whitespace-nowrap">Pelanggan & Area</th>
+                <th className="py-3.5 px-4 whitespace-nowrap">Nominal</th>
+                <th className="py-3.5 px-6 whitespace-nowrap">Status Tugas</th>
               </tr>
             </thead>
-            <tbody className="text-sm divide-y divide-slate-100">
-              {dummyInvoices.map((inv) => (
+            <tbody className="divide-y divide-slate-50">
+              {filteredInvoices.map((inv) => (
                 <tr key={inv.id} className={`transition-colors ${selectedInvoices.includes(inv.id) ? 'bg-blue-50/50' : 'hover:bg-slate-50'}`}>
-                  <td className="p-4 text-center">
+                  <td className="py-3.5 px-6 whitespace-nowrap text-center">
                     {!inv.assignedTo ? (
                       <div className="cursor-pointer" onClick={() => handleSelect(inv.id)}>
                         {selectedInvoices.includes(inv.id) ? <CheckSquare className="w-5 h-5 text-blue-600 inline" /> : <Square className="w-5 h-5 text-slate-300 inline" />}
@@ -1232,18 +1302,18 @@ function SerahTerimaFakturView() {
                       <CheckSquare className="w-5 h-5 text-slate-200 inline" />
                     )}
                   </td>
-                  <td className="p-4">
-                    <div className="font-bold text-blue-900">{inv.id}</div>
-                    <div className="text-slate-500 text-xs mt-0.5">{inv.date}</div>
+                  <td className="py-3.5 px-4 whitespace-nowrap">
+                    <div className="font-bold text-blue-900 text-xs">{inv.id}</div>
+                    <div className="text-slate-500 text-[11px] mt-0.5">{inv.date}</div>
                   </td>
-                  <td className="p-4">
-                    <div className="font-bold text-slate-800">{inv.customer}</div>
-                    <div className="text-slate-500 text-xs mt-0.5 flex items-center gap-1">
+                  <td className="py-3.5 px-4 whitespace-nowrap">
+                    <div className="font-bold text-slate-800 text-xs">{inv.customer}</div>
+                    <div className="text-slate-500 text-[11px] mt-0.5 flex items-center gap-1">
                       <MapPin className="w-3 h-3" /> {inv.area}
                     </div>
                   </td>
-                  <td className="p-4 font-bold text-slate-800">{inv.amount}</td>
-                  <td className="p-4">
+                  <td className="py-3.5 px-4 whitespace-nowrap font-bold text-slate-800 text-xs">{inv.amount}</td>
+                  <td className="py-3.5 px-6 whitespace-nowrap">
                     {inv.assignedTo ? (
                       <div className="flex items-center gap-2 text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-md text-xs font-bold border border-emerald-100 w-fit">
                         <UserCheck className="w-3.5 h-3.5" />
@@ -1267,7 +1337,7 @@ function SerahTerimaFakturView() {
 }
 
 // --- VERIFIKASI PEMBAYARAN VIEW ---
-function VerifikasiPembayaranView() {
+export function VerifikasiPembayaranView() {
   const verifications = [
     { id: 'INV-2607-001', customer: 'Bidan Ningsih', collector: 'Andi Saputra', amount: 'Rp 1.500.000', method: 'Transfer BCA', date: 'Hari ini, 14:30', status: 'pending' },
     { id: 'INV-2607-002', customer: 'Klinik Sehati', collector: 'Budi Santoso', amount: 'Rp 3.000.000', method: 'Uang Tunai', date: 'Hari ini, 13:15', status: 'pending' },
@@ -1345,3 +1415,6 @@ function VerifikasiPembayaranView() {
     </motion.div>
   );
 }
+
+
+

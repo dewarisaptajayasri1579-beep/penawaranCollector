@@ -4,7 +4,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import App from './App.tsx';
 import DemoSelection from './demo/DemoSelection.tsx';
 import DemoApp from './demo/App.tsx';
-import AdminApp from './demo/AdminApp.tsx';
+import AdminApp from './demo/admin/AdminIndex.tsx';
 import './index.css';
 
 createRoot(document.getElementById('root')!).render(
