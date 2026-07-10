@@ -1,5 +1,7 @@
 import React from 'react';
-import { Download, FileText, Smartphone } from 'lucide-react';
+import { Download, FileText, Smartphone, Play } from 'lucide-react';
+
+import { useNavigate } from 'react-router-dom';
 
 interface HeaderProps {
   currentSlide: number;
@@ -8,6 +10,7 @@ interface HeaderProps {
 }
 
 export default function Header({ currentSlide, onSetSlide, onOpenProposal }: HeaderProps) {
+  const navigate = useNavigate();
   const menus = [
     { label: 'Intro', slide: 0 },
     { label: 'Masalah', slide: 1 },
@@ -67,12 +70,12 @@ export default function Header({ currentSlide, onSetSlide, onOpenProposal }: Hea
           </span>
 
           <button
-            id="download-proposal-header-btn"
-            onClick={onOpenProposal}
-            className="px-5 py-2 bg-[#003366] text-white rounded-lg text-sm font-semibold shadow-md shadow-blue-900/10 hover:bg-[#002244] transition-all duration-150 active:scale-95 cursor-pointer"
+            id="demo-header-btn"
+            onClick={() => navigate('/demo')}
+            className="flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-slate-950 px-3 py-1.5 md:px-5 md:py-2 rounded-xl text-xs font-extrabold shadow-md transition-all cursor-pointer"
           >
-            <span className="hidden sm:inline">Download Proposal</span>
-            <span className="inline sm:hidden"><Download className="h-4 w-4" /></span>
+            <Play className="h-4 w-4 fill-current" />
+            <span className="hidden sm:inline">Lihat Demo</span>
           </button>
         </div>
       </div>

@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
-import { Download, MessageCircle, BarChart3, Shield, Users, Smartphone, RefreshCw, Layers } from 'lucide-react';
+import { Download, MessageCircle, BarChart3, Shield, Users, Smartphone, RefreshCw, Layers, Play } from 'lucide-react';
 import { StatItem } from '../types';
 import { motion } from 'motion/react';
+
+import { useNavigate } from 'react-router-dom';
 
 interface SlideIntroProps {
   onOpenProposal: () => void;
 }
 
 export default function SlideIntro({ onOpenProposal }: SlideIntroProps) {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'all' | 'overdue' | 'active'>('all');
 
   // Stats to render at the bottom of the slide
@@ -79,13 +82,14 @@ export default function SlideIntro({ onOpenProposal }: SlideIntroProps) {
             className="flex items-center gap-4 pt-2"
           >
             <button
-              id="download-proposal-intro-btn"
-              onClick={onOpenProposal}
-              className="px-6 py-4 bg-[#003366] hover:bg-[#002244] text-white rounded-xl font-bold shadow-xl shadow-blue-900/20 transition-all duration-200 cursor-pointer text-sm"
+              id="demo-intro-btn"
+              onClick={() => navigate('/demo')}
+              className="w-full sm:w-auto px-6 py-4 bg-amber-500 hover:bg-amber-600 text-slate-950 rounded-xl font-extrabold shadow-xl shadow-amber-900/20 transition-all duration-200 cursor-pointer text-sm flex items-center justify-center gap-2"
             >
-              Download Proposal
+              <Play className="h-4 w-4 fill-current" />
+              Lihat Demo Interaktif
             </button>
-            <a
+            {/* <a
               id="whatsapp-intro-btn"
               href="https://wa.me/6281234567890?text=Halo%20saya%20tertarik%20dengan%20Collector%20Recall"
               target="_blank"
@@ -94,7 +98,7 @@ export default function SlideIntro({ onOpenProposal }: SlideIntroProps) {
             >
               <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.417-.003 6.557-5.338 11.892-11.893 11.892-1.997-.001-3.951-.5-5.688-1.448l-6.305 1.652zm6.599-3.835c1.52.909 3.243 1.389 5.005 1.391 5.482.002 9.944-4.461 9.947-9.945.002-2.657-1.032-5.155-2.908-7.03s-4.375-2.912-7.033-2.913c-5.483 0-9.944 4.463-9.947 9.947-.001 1.77.465 3.497 1.348 5.011l-.893 3.258 3.481-.912z"/></svg>
               <span>Konsultasi WA</span>
-            </a>
+            </a> */}
           </motion.div>
         </div>
 

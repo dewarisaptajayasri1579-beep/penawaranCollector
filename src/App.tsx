@@ -7,13 +7,22 @@ import SlideProblems from './components/SlideProblems';
 import SlideSolution from './components/SlideSolution';
 import SlideFeatures from './components/SlideFeatures';
 import SlidePricing from './components/SlidePricing';
-import ProposalModal from './components/ProposalModal';
 import WhatsAppButton from './components/WhatsAppButton';
+import ProposalPdfTemplate from './components/ProposalPdfTemplate';
 
 export default function App() {
   const [currentSlide, setCurrentSlide] = useState<number>(0);
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [slideDirection, setSlideDirection] = useState<'left' | 'right'>('right');
+
+  const defaultFormData = {
+    name: 'Bapak/Ibu',
+    company: 'Perusahaan Anda',
+    whatsapp: '-',
+    email: '-',
+    businessType: '-',
+    collectorCount: '-',
+    notes: '',
+  };
 
   // Swipe gesture tracking state
   const touchStartX = useRef<number>(0);
@@ -21,13 +30,17 @@ export default function App() {
 
   const totalSlides = 5;
 
+  const handleDownloadPDF = () => {
+    window.print();
+  };
+
   // Move to next slide helper
   const handleNext = () => {
     if (currentSlide < totalSlides - 1) {
       setSlideDirection('right');
       setCurrentSlide((prev) => prev + 1);
     } else {
-      setIsModalOpen(true);
+      handleDownloadPDF();
     }
   };
 
@@ -50,9 +63,6 @@ export default function App() {
   // Listen to keyboard left/right arrow keys
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Do not trigger slides if the user is typing in a modal form
-      if (isModalOpen) return;
-
       if (e.key === 'ArrowRight') {
         handleNext();
       } else if (e.key === 'ArrowLeft') {
@@ -64,7 +74,7 @@ export default function App() {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [currentSlide, isModalOpen]);
+  }, [currentSlide]);
 
   // Handle Swipe gestures
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -97,7 +107,7 @@ export default function App() {
   const renderSlide = () => {
     switch (currentSlide) {
       case 0:
-        return <SlideIntro onOpenProposal={() => setIsModalOpen(true)} />;
+        return <SlideIntro onOpenProposal={handleDownloadPDF} />;
       case 1:
         return <SlideProblems />;
       case 2:
@@ -105,9 +115,9 @@ export default function App() {
       case 3:
         return <SlideFeatures />;
       case 4:
-        return <SlidePricing onOpenProposal={() => setIsModalOpen(true)} />;
+        return <SlidePricing onOpenProposal={handleDownloadPDF} />;
       default:
-        return <SlideIntro onOpenProposal={() => setIsModalOpen(true)} />;
+        return <SlideIntro onOpenProposal={handleDownloadPDF} />;
     }
   };
 
@@ -130,25 +140,27 @@ export default function App() {
   return (
     <div
       id="app-container"
-      className="flex flex-col h-screen overflow-hidden bg-slate-50/50"
+      className="flex flex-col h-screen print:h-auto overflow-hidden print:overflow-visible bg-slate-50/50 print:bg-white font-sans relative"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
       {/* Sticky Top Header */}
-      <Header
-        currentSlide={currentSlide}
-        onSetSlide={handleSetSlide}
-        onOpenProposal={() => setIsModalOpen(true)}
-      />
+      <div className="print:hidden sticky top-0 z-40">
+        <Header
+          currentSlide={currentSlide}
+          onSetSlide={handleSetSlide}
+          onOpenProposal={handleDownloadPDF}
+        />
+      </div>
 
       {/* Main Slides Content Display Window */}
-      <main id="app-main" className="flex-1 relative overflow-hidden flex flex-col justify-center max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <main id="app-main" className="print:hidden flex-1 relative overflow-hidden flex flex-col justify-center max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div className="w-full h-full relative overflow-hidden bg-white/70 backdrop-blur-xs rounded-2xl border border-slate-100 p-4 md:p-6 shadow-sm flex flex-col">
           
           {/* Header section indicator inside the board */}
           <div className="flex items-center justify-between text-xs font-semibold text-slate-400 mb-2 pb-2 border-b border-slate-50 shrink-0">
-            <span>COLLECTOR RECALL PRESENTATION DECK</span>
+            <span>BLESSCOM COLLECTOR RECAL PRESENTATION DECK</span>
             <span className="font-mono bg-slate-100 px-2 py-0.5 rounded text-[#003366]">SLIDE 0{currentSlide + 1} / 05</span>
           </div>
 
@@ -173,20 +185,24 @@ export default function App() {
       </main>
 
       {/* Interactive Controls Footer Navigation */}
-      <FooterNav
-        currentSlide={currentSlide}
-        totalSlides={totalSlides}
-        onPrev={handlePrev}
-        onNext={handleNext}
-        onSetSlide={handleSetSlide}
-        onOpenProposal={() => setIsModalOpen(true)}
-      />
+      <div className="print:hidden">
+        <FooterNav
+          currentSlide={currentSlide}
+          totalSlides={totalSlides}
+          onPrev={handlePrev}
+          onNext={handleNext}
+          onSetSlide={handleSetSlide}
+          onOpenProposal={handleDownloadPDF}
+        />
+      </div>
 
-      {/* Floating Interactive WhatsApp Button */}
-      <WhatsAppButton />
+      {/* Floating Interactive WhatsApp Button (Hidden temporarily) */}
+      {/* <div className="print:hidden">
+        <WhatsAppButton />
+      </div> */}
 
-      {/* Proposal Request Form Modal Dialog */}
-      <ProposalModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      {/* Hidden PDF Template for direct generation */}
+      <ProposalPdfTemplate formData={defaultFormData} />
     </div>
   );
 }

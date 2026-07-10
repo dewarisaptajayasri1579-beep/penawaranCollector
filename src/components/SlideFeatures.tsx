@@ -1,5 +1,5 @@
 import React from 'react';
-import { BarChart3, ListTodo, MapPin, Camera, ClipboardCheck, TrendingUp, ShieldCheck, Zap, Activity, CheckCircle2 } from 'lucide-react';
+import { BarChart3, ListTodo, MapPin, Camera, ClipboardCheck, TrendingUp, ShieldCheck, Zap, Activity, CheckCircle2, MessageCircle, FileText } from 'lucide-react';
 import { FeatureItem } from '../types';
 import { motion } from 'motion/react';
 
@@ -47,6 +47,20 @@ export default function SlideFeatures() {
       iconName: 'TrendingUp',
       badge: 'Satu Klik Ekspor',
     },
+    {
+      id: 7,
+      title: 'Integrasi WhatsApp Reminder',
+      desc: 'Kirim pesan pengingat (reminder) jatuh tempo langsung ke HP pelanggan dengan satu klik atau secara otomatis.',
+      iconName: 'MessageCircle',
+      badge: 'Auto-Reminder',
+    },
+    {
+      id: 8,
+      title: 'Tracking Faktur Fisik',
+      desc: 'Sistem memantau serah terima dokumen faktur fisik antara admin dan collector untuk mencegah resiko kehilangan berkas.',
+      iconName: 'FileText',
+      badge: 'Keamanan Dokumen',
+    },
   ];
 
   const benefits = [
@@ -70,6 +84,10 @@ export default function SlideFeatures() {
         return <ClipboardCheck className="h-5 w-5 text-[#003366]" />;
       case 'TrendingUp':
         return <TrendingUp className="h-5 w-5 text-[#003366]" />;
+      case 'MessageCircle':
+        return <MessageCircle className="h-5 w-5 text-[#003366]" />;
+      case 'FileText':
+        return <FileText className="h-5 w-5 text-[#003366]" />;
       default:
         return <BarChart3 className="h-5 w-5 text-[#003366]" />;
     }
@@ -103,8 +121,8 @@ export default function SlideFeatures() {
         </div>
       </div>
 
-      {/* Grid Layout 2 Rows x 3 Columns */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 my-auto pt-2">
+      {/* Grid Layout */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 my-auto pt-2">
         {features.map((feat, index) => (
           <motion.div
             key={feat.id}

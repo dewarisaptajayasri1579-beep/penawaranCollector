@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
-import { X, CheckCircle, FileText, Send, Building2, Users, Briefcase, MessageSquare, Mail, Phone, User } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { X, CheckCircle, FileText, Send, Building2, Users, Briefcase, MessageSquare, Mail, Phone, User, Loader2 } from 'lucide-react';
 import { ProposalFormInput } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
+import html2pdf from 'html2pdf.js';
+import ProposalPdfTemplate from './ProposalPdfTemplate';
 
 interface ProposalModalProps {
   isOpen: boolean;
@@ -22,6 +24,9 @@ export default function ProposalModal({ isOpen, onClose }: ProposalModalProps) {
   const [errors, setErrors] = useState<Partial<ProposalFormInput>>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+  
+  const pdfRef = useRef<HTMLDivElement>(null);
 
   const businessTypes = [
     'Distributor',
@@ -81,39 +86,29 @@ export default function ProposalModal({ isOpen, onClose }: ProposalModalProps) {
     }, 1000);
   };
 
-  const handleDownloadDummyPDF = () => {
-    // Create a dummy text file downloaded as PDF
-    const dummyContent = `COLLECTOR RECALL PROPOSAL
-=========================
-Terima kasih telah mengunduh proposal Collector Recall.
+  const handleDownloadPDF = async () => {
+    if (!pdfRef.current) return;
+    
+    try {
+      setIsGeneratingPdf(true);
+      
+      const element = pdfRef.current;
+      const opt = {
+        margin:       0,
+        filename:     `Proposal_Blesscom_Collector_${formData.company.replace(/[^a-z0-9]/gi, '_')}.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
 
-Detail Pengaju:
-Nama: ${formData.name}
-Perusahaan: ${formData.company}
-WhatsApp: ${formData.whatsapp}
-Email: ${formData.email}
-Bidang Usaha: ${formData.businessType}
-Jumlah Collector: ${formData.collectorCount}
-Kebutuhan: ${formData.notes || '-'}
-
-Aplikasi ini dirancang untuk:
-1. Mengontrol tagihan overdue secara otomatis.
-2. Membagi tugas follow up harian secara adil & terstruktur.
-3. Memantau aktivitas kunjungan collector di lapangan (GPS & Foto).
-4. Pencatatan hasil kunjungan secara real-time.
-5. Laporan progress dan performa collection yang komprehensif.
-
-Hubungi kami via WhatsApp: https://wa.me/6281234567890 untuk demo produk langsung!`;
-
-    const blob = new Blob([dummyContent], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'proposal-collector-recall.txt'; // It downloads as text for actual proof
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+      // html2pdf returns a promise if called like this
+      await html2pdf().set(opt).from(element).save();
+      
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+    } finally {
+      setIsGeneratingPdf(false);
+    }
   };
 
   const getWaLink = () => {
@@ -421,11 +416,16 @@ Hubungi kami via WhatsApp: https://wa.me/6281234567890 untuk demo produk langsun
                     {/* Download Button */}
                     <button
                       id="download-pdf-btn"
-                      onClick={handleDownloadDummyPDF}
-                      className="flex-1 py-3 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl text-sm shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
+                      onClick={handleDownloadPDF}
+                      disabled={isGeneratingPdf}
+                      className="flex-1 py-3 px-4 bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-400 text-white font-semibold rounded-xl text-sm shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
                     >
-                      <FileText className="h-4 w-4" />
-                      <span>Download PDF</span>
+                      {isGeneratingPdf ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <FileText className="h-4 w-4" />
+                      )}
+                      <span>{isGeneratingPdf ? 'Membuat PDF...' : 'Download PDF'}</span>
                     </button>
 
                     {/* WhatsApp Action */}
@@ -440,6 +440,9 @@ Hubungi kami via WhatsApp: https://wa.me/6281234567890 untuk demo produk langsun
                       <span>Konsultasi WA</span>
                     </a>
                   </div>
+
+                  {/* Hidden PDF Template for generation */}
+                  <ProposalPdfTemplate formData={formData} pdfRef={pdfRef} />
 
                   <button
                     id="back-modal-btn"

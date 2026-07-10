@@ -10,48 +10,33 @@ interface SlidePricingProps {
 export default function SlidePricing({ onOpenProposal }: SlidePricingProps) {
   const plans: PricingPlan[] = [
     {
-      id: 'starter',
-      name: 'Starter',
-      desc: 'Cocok untuk bisnis mikro/UKM yang ingin mulai beralih dari pencatatan kertas atau WhatsApp manual.',
-      price: 'Mulai Rp 5.000.000',
+      id: 'termin',
+      name: 'Pembayaran Termin (2x)',
+      desc: 'Pembayaran bertahap untuk kemudahan cashflow. DP 16 Juta di awal, pelunasan 15 Juta sebelum aplikasi go-live.',
+      price: 'Rp 31.000.000',
       features: [
-        'Kelola Data Pelanggan',
-        'Input Data Tagihan Terpusat',
-        'Daftar Tugas Collector Harian',
-        'Catat Hasil Follow Up Klien',
-        'Laporan Penagihan Sederhana',
+        'Aplikasi PWA Mobile Collector',
+        'Web Dashboard Admin & Supervisor',
+        'Fitur GPS & Kamera Terintegrasi',
+        'Setup & Inisiasi Server Awal',
+        'Support Maintenance 3 Bulan'
       ],
     },
     {
-      id: 'professional',
-      name: 'Professional',
-      desc: 'Ideal untuk bisnis dengan tim sales atau collection lapangan aktif yang membutuhkan pengawasan GPS.',
-      price: 'Mulai Rp 12.000.000',
+      id: 'full',
+      name: 'Full Payment',
+      desc: 'Lebih hemat Rp 3,5 Juta. Pembayaran penuh di awal untuk mendapatkan prioritas pengembangan & diskon spesial.',
+      price: 'Rp 27.500.000',
       isPopular: true,
-      badge: 'Paling Populer',
+      badge: 'Hemat Rp 3,5 Juta',
       features: [
-        'Semua fitur paket Starter',
-        'Check-in Lokasi GPS Lapangan',
-        'Upload Foto Bukti Kunjungan',
-        'Sistem Reminder Follow Up',
-        'Laporan Performa Masing-Masing Collector',
-        'Impor & Ekspor Data Excel Instan',
+        'Semua fitur aplikasi PWA & Web',
+        'Diskon Langsung (Cashback) Rp 3.500.000',
+        'Setup Server & Maintenance 3 Bulan',
+        'Prioritas Antrean Pengembangan',
+        'Konsultasi Optimalisasi SOP Gratis'
       ],
-    },
-    {
-      id: 'enterprise',
-      name: 'Custom / Enterprise',
-      desc: 'Dirancang bagi korporasi atau institusi pembiayaan dengan alur SOP penagihan yang kompleks.',
-      price: 'By Request',
-      features: [
-        'Sistem Multi-Cabang / Regional',
-        'Kustomisasi Flow Sesuai SOP Internal',
-        'Integrasi Otomatis WhatsApp API',
-        'Integrasi Sistem Existing (ERP, SAP, Core)',
-        'Kustomisasi Laporan Khusus Manajemen',
-        'Sesi Training Intensif Tim Admin & Collector',
-      ],
-    },
+    }
   ];
 
   return (
@@ -59,15 +44,15 @@ export default function SlidePricing({ onOpenProposal }: SlidePricingProps) {
       {/* Heading */}
       <div className="space-y-2 text-center max-w-3xl mx-auto mb-4">
         <h2 className="text-2xl md:text-3xl font-extrabold text-[#003366] tracking-tight">
-          Paket Investasi Terbaik Bisnis Anda
+          Pilihan Pembayaran yang Fleksibel
         </h2>
         <p className="text-xs md:text-sm text-slate-500">
-          Pilih paket sesuai dengan kapasitas tim dan kebutuhan operasional perusahaan, mulai dari sistem siap pakai hingga pengembangan custom.
+          Pilih metode pembayaran yang paling sesuai dengan cashflow perusahaan Anda. Dapatkan potongan harga khusus untuk pembayaran penuh.
         </p>
       </div>
 
-      {/* Grid of 3 Pricing cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 my-auto items-stretch pt-2">
+      {/* Grid of 2 Pricing cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-auto items-stretch pt-2 max-w-4xl mx-auto w-full">
         {plans.map((plan, index) => (
           <motion.div
             key={plan.id}
@@ -135,38 +120,7 @@ export default function SlidePricing({ onOpenProposal }: SlidePricingProps) {
         ))}
       </div>
 
-      {/* Main Bottom CTAs */}
-      <div className="mt-6 pt-5 border-t border-slate-100 flex flex-col md:flex-row items-center justify-between gap-4">
-        <div className="text-left space-y-1">
-          <p className="text-xs md:text-sm font-bold text-slate-800">
-            Ingin lihat demo langsung aplikasi?
-          </p>
-          <p className="text-[11px] md:text-xs text-slate-500 max-w-xl leading-relaxed">
-            Hubungi tim teknis kami untuk menjadwalkan presentasi langsung menggunakan data simulasi bisnis Anda.
-          </p>
-        </div>
-
-        <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-          <button
-            id="download-proposal-bottom-btn"
-            onClick={onOpenProposal}
-            className="px-5 py-3 bg-[#003366] hover:bg-[#002244] text-white font-semibold rounded-xl text-xs shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer focus:outline-none"
-          >
-            <Download className="h-4 w-4" />
-            <span>Download Proposal Lengkap</span>
-          </button>
-          <a
-            id="whatsapp-bottom-btn"
-            href="https://wa.me/6281234567890?text=Halo%20saya%20tertarik%20dengan%20Collector%20Recall"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-5 py-3 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 font-semibold rounded-xl text-xs shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer focus:outline-none"
-          >
-            <MessageCircle className="h-4 w-4 text-emerald-500 fill-current" />
-            <span>Konsultasi Gratis via WhatsApp</span>
-          </a>
-        </div>
-      </div>
+      {/* Main Bottom CTAs removed temporarily */}
     </div>
   );
 }
