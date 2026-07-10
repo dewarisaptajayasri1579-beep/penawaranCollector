@@ -5,7 +5,8 @@ import {
   ArrowLeft, LayoutDashboard, FileText, Settings, Users, Bell, 
   TrendingUp, AlertCircle, CheckCircle2, Clock, MapPin, Search, 
   MoreVertical, Download, ChevronRight, FilePlus, Send, Activity, 
-  BellRing, MessageSquare, PieChart, Contact, UploadCloud, FileSpreadsheet
+  BellRing, MessageSquare, PieChart, Contact, UploadCloud, FileSpreadsheet,
+  Filter, Calendar, ChevronLeft, Eye, Edit, Trash2
 } from 'lucide-react';
 
 // --- MAIN ADMIN APP COMPONENT ---
@@ -89,7 +90,10 @@ export default function AdminApp() {
               <FilePlus className="w-4 h-4" />
               <span className="text-sm">Import Faktur</span>
             </div>
-            <div className="flex items-center gap-3 text-slate-600 hover:text-slate-900 hover:bg-slate-50 px-3 py-2.5 rounded-lg cursor-pointer transition-colors border border-transparent">
+            <div 
+              onClick={() => setActiveMenu('data-faktur')}
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer transition-colors ${activeMenu === 'data-faktur' ? 'bg-blue-50 text-blue-700 border border-blue-100 font-semibold shadow-sm' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50 border border-transparent'}`}
+            >
               <FileText className="w-4 h-4" />
               <span className="text-sm">Data Faktur</span>
             </div>
@@ -156,6 +160,7 @@ export default function AdminApp() {
           <AnimatePresence mode="wait">
             {activeMenu === 'dashboard' && <DashboardView key="dashboard" />}
             {activeMenu === 'import' && <ImportFakturView key="import" onNavigate={(menu) => setActiveMenu(menu)} />}
+            {activeMenu === 'data-faktur' && <DataFakturView key="data-faktur" />}
           </AnimatePresence>
         </main>
       </div>
@@ -679,6 +684,237 @@ function ImportFakturView({ onNavigate }: { onNavigate: (menu: string) => void }
           </div>
         </motion.div>
       )}
+    </motion.div>
+  );
+}
+
+// --- DATA FAKTUR VIEW COMPONENT ---
+// --- DATA FAKTUR VIEW COMPONENT ---
+const MASTER_INVOICES = [
+  { id: 'INV-202607-001', date: '01 Jul 2026', customer: 'Bidan Lestari', area: 'Jakarta Selatan', amount: 1500000, remaining: 0, dueDate: '10 Jul 2026', status: 'Lunas', collector: 'Budi', result: 'Tertagih Sesuai Nominal' },
+  { id: 'INV-202607-002', date: '02 Jul 2026', customer: 'Klinik Bidan Aminah', area: 'Jakarta Pusat', amount: 5200000, remaining: 5200000, dueDate: '15 Jul 2026', status: 'Menunggu Verifikasi', collector: 'Andi', result: 'Menunggu Konfirmasi' },
+  { id: 'INV-202606-089', date: '25 Jun 2026', customer: 'Bidan Siti Rohmah', area: 'Jakarta Barat', amount: 12000000, remaining: 12000000, dueDate: '05 Jul 2026', status: 'Overdue', collector: 'Rina', result: 'Tidak Di Tempat' },
+  { id: 'INV-202607-015', date: '05 Jul 2026', customer: 'Bidan Rina Setia', area: 'Tangerang', amount: 3400000, remaining: 3400000, dueDate: '12 Jul 2026', status: 'Belum Ditagih', collector: null, result: '-' },
+  { id: 'INV-202607-018', date: '06 Jul 2026', customer: 'Bidan Mawar', area: 'Depok', amount: 850000, remaining: 350000, dueDate: '14 Jul 2026', status: 'Tertagih Sebagian', collector: 'Andi', result: 'Tertagih Sebagian' },
+  { id: 'INV-202607-020', date: '07 Jul 2026', customer: 'Bidan Yulia', area: 'Jakarta Selatan', amount: 25000000, remaining: 25000000, dueDate: '20 Jul 2026', status: 'Belum Ditagih', collector: null, result: '-' },
+  { id: 'INV-202606-045', date: '10 Jun 2026', customer: 'Klinik Bidan Ningsih', area: 'Jakarta Timur', amount: 4100000, remaining: 2000000, dueDate: '20 Jun 2026', status: 'Overdue', collector: 'Budi', result: 'Janji Bayar' },
+  { id: 'INV-202607-022', date: '08 Jul 2026', customer: 'Bidan Wati', area: 'Bekasi', amount: 1800000, remaining: 0, dueDate: '18 Jul 2026', status: 'Lunas', collector: 'Rina', result: 'Tertagih Sesuai Nominal' },
+  { id: 'INV-202607-025', date: '09 Jul 2026', customer: 'Bidan Kartini', area: 'Jakarta Barat', amount: 6700000, remaining: 6700000, dueDate: '19 Jul 2026', status: 'Menunggu Verifikasi', collector: 'Andi', result: 'Menunggu Konfirmasi' },
+  { id: 'INV-202607-030', date: '10 Jul 2026', customer: 'Bidan Sumiati', area: 'Jakarta Utara', amount: 15500000, remaining: 15500000, dueDate: '25 Jul 2026', status: 'Belum Ditagih', collector: null, result: '-' },
+];
+
+function DataFakturView() {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('Semua');
+  const [resultFilter, setResultFilter] = useState('Semua');
+
+  const filteredInvoices = MASTER_INVOICES.filter(inv => {
+    const matchesSearch = inv.id.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                          inv.customer.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter === 'Semua' || inv.status === statusFilter;
+    const matchesResult = resultFilter === 'Semua' || inv.result === resultFilter;
+    return matchesSearch && matchesStatus && matchesResult;
+  });
+
+  const getStatusBadge = (status: string) => {
+    switch(status) {
+      case 'Lunas': return <span className="bg-emerald-50 text-emerald-600 border border-emerald-200 px-2.5 py-1 rounded-md text-[10px] font-bold">Lunas</span>;
+      case 'Overdue': return <span className="bg-red-50 text-red-600 border border-red-200 px-2.5 py-1 rounded-md text-[10px] font-bold">Overdue</span>;
+      case 'Menunggu Verifikasi': return <span className="bg-amber-50 text-amber-600 border border-amber-200 px-2.5 py-1 rounded-md text-[10px] font-bold">Verifikasi</span>;
+      case 'Tertagih Sebagian': return <span className="bg-blue-50 text-blue-600 border border-blue-200 px-2.5 py-1 rounded-md text-[10px] font-bold">Parsial</span>;
+      default: return <span className="bg-slate-100 text-slate-600 border border-slate-200 px-2.5 py-1 rounded-md text-[10px] font-bold">{status}</span>;
+    }
+  };
+
+  return (
+    <motion.div 
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      className="space-y-6"
+    >
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-2">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Data Faktur</h1>
+          <p className="text-sm text-slate-500">Database master seluruh tagihan aktif dan riwayatnya.</p>
+        </div>
+        <div className="flex gap-2">
+          <button className="flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-700 px-4 py-2 rounded-lg text-sm font-semibold transition-colors border border-slate-200 shadow-sm">
+            <Download className="w-4 h-4" />
+            Export Data
+          </button>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+        {/* Filter Bar */}
+        <div className="p-4 border-b border-slate-200 bg-slate-50/50 flex flex-wrap gap-3 items-center justify-between">
+          <div className="flex gap-3 flex-wrap">
+            <div className="relative">
+              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <input 
+                type="text" 
+                placeholder="Cari No. Faktur / Pelanggan..." 
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-9 pr-4 py-2 text-sm border border-slate-200 rounded-lg w-64 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white" 
+              />
+            </div>
+            
+            <div className="relative flex items-center bg-white border border-slate-200 rounded-lg pr-2 hover:bg-slate-50 transition-colors">
+              <div className="pl-3 py-2 text-slate-400 pointer-events-none">
+                <Filter className="w-4 h-4" />
+              </div>
+              <select 
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="pl-2 pr-4 py-2 text-sm text-slate-600 bg-transparent focus:outline-none cursor-pointer appearance-none"
+              >
+                <option value="Semua">Semua Status</option>
+                <option value="Lunas">Lunas</option>
+                <option value="Overdue">Overdue</option>
+                <option value="Menunggu Verifikasi">Menunggu Verifikasi</option>
+                <option value="Tertagih Sebagian">Tertagih Sebagian</option>
+                <option value="Belum Ditagih">Belum Ditagih</option>
+              </select>
+            </div>
+
+            <div className="relative flex items-center bg-white border border-slate-200 rounded-lg pr-2 hover:bg-slate-50 transition-colors">
+              <div className="pl-3 py-2 text-slate-400 pointer-events-none">
+                <Activity className="w-4 h-4" />
+              </div>
+              <select 
+                value={resultFilter}
+                onChange={(e) => setResultFilter(e.target.value)}
+                className="pl-2 pr-4 py-2 text-sm text-slate-600 bg-transparent focus:outline-none cursor-pointer appearance-none max-w-[150px] truncate"
+              >
+                <option value="Semua">Hasil Kunjungan</option>
+                <option value="Tertagih Sesuai Nominal">Sesuai Nominal</option>
+                <option value="Tertagih Sebagian">Sebagian</option>
+                <option value="Menunggu Konfirmasi">Menunggu Konfirmasi</option>
+                <option value="Janji Bayar">Janji Bayar</option>
+                <option value="Tidak Di Tempat">Tidak Di Tempat</option>
+                <option value="-">Belum Ada</option>
+              </select>
+            </div>
+            
+            <button className="flex items-center gap-2 bg-white border border-slate-200 px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-slate-50">
+              <Calendar className="w-4 h-4" /> Jatuh Tempo
+            </button>
+            <button className="flex items-center gap-2 bg-white border border-slate-200 px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-slate-50">
+              <Contact className="w-4 h-4" /> Collector
+            </button>
+          </div>
+          <span className="text-xs text-slate-500 font-medium">Menampilkan {filteredInvoices.length} dari {MASTER_INVOICES.length} Data</span>
+        </div>
+
+        {/* Data Table */}
+        <div className="overflow-x-auto min-h-[400px]">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-500 uppercase tracking-wider">
+                <th className="p-4">No. Faktur</th>
+                <th className="p-4">Pelanggan</th>
+                <th className="p-4">Nominal / Sisa</th>
+                <th className="p-4">Jatuh Tempo</th>
+                <th className="p-4">Status</th>
+                <th className="p-4">Collector</th>
+                <th className="p-4 text-right">Aksi</th>
+              </tr>
+            </thead>
+            <tbody className="text-sm divide-y divide-slate-100">
+              {filteredInvoices.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="p-8 text-center text-slate-400">
+                    Tidak ada faktur yang sesuai dengan pencarian atau filter.
+                  </td>
+                </tr>
+              ) : (
+                filteredInvoices.map((inv, idx) => (
+                  <tr key={idx} className="hover:bg-slate-50 transition-colors group">
+                    <td className="p-4">
+                      <div className="font-bold text-slate-800">{inv.id}</div>
+                      <div className="text-[10px] text-slate-500">{inv.date}</div>
+                    </td>
+                    <td className="p-4">
+                      <div className="font-bold text-slate-700">{inv.customer}</div>
+                      <div className="text-[10px] text-slate-500 flex items-center gap-1 mt-0.5">
+                        <MapPin className="w-3 h-3" /> {inv.area}
+                      </div>
+                    </td>
+                    <td className="p-4">
+                      <div className="font-bold text-slate-900">Rp {inv.amount.toLocaleString('id-ID')}</div>
+                      {inv.remaining > 0 && inv.remaining !== inv.amount && (
+                        <div className="text-[10px] text-orange-600 font-semibold mt-0.5">
+                          Sisa: Rp {inv.remaining.toLocaleString('id-ID')}
+                        </div>
+                      )}
+                      {inv.remaining === 0 && (
+                        <div className="text-[10px] text-emerald-600 font-semibold mt-0.5">Lunas</div>
+                      )}
+                    </td>
+                    <td className="p-4">
+                      <div className={`font-semibold ${inv.status === 'Overdue' ? 'text-red-600' : 'text-slate-700'}`}>
+                        {inv.dueDate}
+                      </div>
+                    </td>
+                    <td className="p-4">
+                      {getStatusBadge(inv.status)}
+                      {inv.result !== '-' && (
+                        <div className="text-[10px] text-slate-500 mt-1 font-medium italic">
+                          Hasil: {inv.result}
+                        </div>
+                      )}
+                    </td>
+                    <td className="p-4">
+                      {inv.collector ? (
+                        <div className="flex items-center gap-2">
+                          <div className="w-6 h-6 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-[10px] font-bold">
+                            {inv.collector.substring(0,2).toUpperCase()}
+                          </div>
+                          <span className="font-medium text-slate-700 text-xs">{inv.collector}</span>
+                        </div>
+                      ) : (
+                        <span className="text-xs text-slate-400 italic">Belum di-assign</span>
+                      )}
+                    </td>
+                    <td className="p-4 text-right">
+                      <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors" title="Detail">
+                          <Eye className="w-4 h-4" />
+                        </button>
+                        <button className="p-1.5 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-md transition-colors" title="Edit">
+                          <Edit className="w-4 h-4" />
+                        </button>
+                        <button className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors" title="Hapus">
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Pagination */}
+        <div className="p-4 border-t border-slate-200 flex items-center justify-between bg-slate-50/50">
+          <button className="px-3 py-1.5 border border-slate-200 rounded-lg text-sm text-slate-500 hover:bg-white hover:text-slate-700 flex items-center gap-1 disabled:opacity-50">
+            <ChevronLeft className="w-4 h-4" /> Prev
+          </button>
+          <div className="flex gap-1">
+            <button className="w-8 h-8 rounded-lg bg-blue-600 text-white text-sm font-bold shadow-sm">1</button>
+            <button className="w-8 h-8 rounded-lg bg-transparent text-slate-600 hover:bg-slate-200 text-sm font-medium">2</button>
+            <button className="w-8 h-8 rounded-lg bg-transparent text-slate-600 hover:bg-slate-200 text-sm font-medium">3</button>
+            <span className="w-8 h-8 flex items-center justify-center text-slate-400">...</span>
+            <button className="w-8 h-8 rounded-lg bg-transparent text-slate-600 hover:bg-slate-200 text-sm font-medium">248</button>
+          </div>
+          <button className="px-3 py-1.5 border border-slate-200 rounded-lg text-sm text-slate-500 hover:bg-white hover:text-slate-700 flex items-center gap-1 disabled:opacity-50">
+            Next <ChevronRight className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
     </motion.div>
   );
 }
